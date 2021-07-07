@@ -38,7 +38,7 @@ def canSpeak(api,gid):
         return False
 
 def processItem(item,db,api):
-    cmdList = ('/ping','/imginfo','/add','/pekori')
+    cmdList = ('/ping','/imginfo','/add','/'+botconfig.stickerName)
     if 'message' in item:
         if 'text' in item['message'] and len(item['message']['text']) > 1 and item['message']['text'][0] == '/':
             hasToReply = False
@@ -79,7 +79,7 @@ def processItem(item,db,api):
                         api.sendMessage(item['message']['chat']['id'],'該圖片已成功加入套餐。',{'reply_to_message_id':item['message']['reply_to_message']['message_id']})
                     else:
                         api.sendMessage(item['message']['chat']['id'],'Usage: reply to the image/sticker with /add command.',{'reply_to_message_id':item['message']['message_id']})
-                elif stripText == '/pekori':
+                elif stripText == '/'+botconfig.stickerName:
                     pid = csprc(len(db['main']))
                     ftype = db['main'].getItem(str(pid),'type')
                     if ftype == 'photo':
