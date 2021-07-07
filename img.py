@@ -96,7 +96,6 @@ def processItem(item,db,api):
             elif hasToReply:
                 api.sendMessage(item['message']['chat']['id'],'請問您對我有什麼奇怪的期待嗎？',{'reply_to_message_id':item['message']['message_id']})
     elif 'inline_query' in item:
-        print('Inline Query:',item)
         k = []
         for i in 'AB':
             pid = csprc(len(db['main']))
