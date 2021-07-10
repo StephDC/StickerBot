@@ -143,7 +143,7 @@ def main():
     dbFile = botconfig.db
     apiKey = botconfig.apiKey
     db = {'config':sqldb.sqliteDB(dbFile,'config')}
-    if db['config'].getItem('dbver','value') != '1.0':
+    if db['config'].getItem('dbver','value') != '1.1':
         raise tg.APIError('DB','DB Version Mismatch')
     db['main'] = sqldb.sqliteDB(dbFile,'main')
     api = tg.tgapi(apiKey)
