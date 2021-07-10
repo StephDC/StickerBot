@@ -38,7 +38,7 @@ def canSpeak(api,gid):
         return False
 
 def processItem(item,db,api):
-    cmdList = ('/ping','/imginfo','/add','/'+botconfig.stickerName)
+    cmdList = ['/ping','/imginfo','/add','/'+botconfig.stickerName]+['/'+i for i in botconfig.stickerFlag]
     if 'message' in item:
         if 'text' in item['message'] and len(item['message']['text']) > 1 and item['message']['text'][0] == '/':
             hasToReply = False
@@ -103,6 +103,9 @@ def processItem(item,db,api):
         k = []
         for i in 'AB':
             pid = csprc(len(db['main']))
+            if item['inline_query']['query'] in botconfig.stickerFlag:
+                while item['inline_query']['query'] not in db['main'].getItem(str(pid),'flag').split('|'):
+                    pid = csprc(len(db['main']))
             ftype = db['main'].getItem(str(pid),'type')
             if ftype == 'sticker':
                 k.append({'type':'sticker','id':item['inline_query']['id']+i+'S','cache_time':1,'is_personal':True,'next_offset':'N','sticker_file_id':db['main'].getItem(str(pid),'fileid')})
