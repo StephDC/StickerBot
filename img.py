@@ -70,17 +70,21 @@ def processItem(item,db,api):
                     if item['message']['from']['id'] not in botconfig.superAdmin:
                         api.sendMessage(item['message']['chat']['id'],'抱歉，只有超級管理員才可以給我添加其他圖片。')
                     elif 'reply_to_message' in item['message'] and ('sticker' in item['message']['reply_to_message'] or 'photo' in item['message']['reply_to_message'] or 'animation' in item['message']['reply_to_message']):
+                        sf = '|'.join(item['message']['text'].split('\n',1)[0].split(' ')[1:])
                         if 'sticker' in item['message']['reply_to_message']:
-                            db['main'].addItem((str(len(db['main'])),str(int(time.time())),str(item['message']['from']['id']),'sticker',item['message']['reply_to_message']['sticker']['file_id'],item['message']['reply_to_message']['sticker']['file_unique_id']))
+                            db['main'].addItem((str(len(db['main'])),str(int(time.time())),str(item['message']['from']['id']),'sticker',item['message']['reply_to_message']['sticker']['file_id'],item['message']['reply_to_message']['sticker']['file_unique_id'],sf))
                         elif 'photo' in item['message']['reply_to_message']:
-                            db['main'].addItem((str(len(db['main'])),str(int(time.time())),str(item['message']['from']['id']),'photo',item['message']['reply_to_message']['photo'][0]['file_id'],item['message']['reply_to_message']['photo'][0]['file_unique_id']))
+                            db['main'].addItem((str(len(db['main'])),str(int(time.time())),str(item['message']['from']['id']),'photo',item['message']['reply_to_message']['photo'][0]['file_id'],item['message']['reply_to_message']['photo'][0]['file_unique_id'],sf))
                         elif 'animation' in item['message']['reply_to_message']:
-                            db['main'].addItem((str(len(db['main'])),str(int(time.time())),str(item['message']['from']['id']),'animation',item['message']['reply_to_message']['animation']['file_id'],item['message']['reply_to_message']['animation']['file_unique_id']))
+                            db['main'].addItem((str(len(db['main'])),str(int(time.time())),str(item['message']['from']['id']),'animation',item['message']['reply_to_message']['animation']['file_id'],item['message']['reply_to_message']['animation']['file_unique_id'],sf))
                         api.sendMessage(item['message']['chat']['id'],'該圖片已成功加入套餐。',{'reply_to_message_id':item['message']['reply_to_message']['message_id']})
                     else:
-                        api.sendMessage(item['message']['chat']['id'],'Usage: reply to the image/sticker with /add command.',{'reply_to_message_id':item['message']['message_id']})
-                elif stripText == '/'+botconfig.stickerName:
+                        api.sendMessage(item['message']['chat']['id'],'Usage: reply to the image/sticker with /add command followed by all flags applicable to this sticker.',{'reply_to_message_id':item['message']['message_id']})
+                elif stripText in ['/'+botconfig.stickerName]+['/'+i for i in botconfig.stickerFlag]:
                     pid = csprc(len(db['main']))
+                    if stripText in ['/'+i for i in botconfig.stickerFlag]:
+                        while stripText[1:] not in db['main'].getItem(str(pid),'flag').split('|'):
+                            pid = csprc(len(db['main']))
                     ftype = db['main'].getItem(str(pid),'type')
                     if ftype == 'photo':
                         api.query('sendPhoto',{'chat_id':item['message']['chat']['id'],'photo':db['main'].getItem(str(pid),'fileid'),'reply_to_message_id':item['message']['message_id']})
