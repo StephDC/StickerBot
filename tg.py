@@ -16,6 +16,7 @@ Version:\n\t'''+str(__version__)
 
 class APIError(Exception):
     def __init__(self,module,info):
+        self.module = module
         self.info = info
     def __str__(self):
         return 'Telegram Bot '+self.module+' Exception: '+self.info
